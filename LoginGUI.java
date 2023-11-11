@@ -1,4 +1,6 @@
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /*
 Form for login page GUI
@@ -24,6 +26,33 @@ public class LoginGUI extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
 
+
+        /**
+         * login method
+         */
+        loginButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // username and password fields taken from text fields
+                String username = userField.getText();
+                char[]  password = passField.getPassword();
+            }
+        });
+
+        /**
+         * sign up method
+         */
+        signupButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // username and password fields taken from text fields
+                String username = userField.getText();
+                char[]  password = passField.getPassword();
+                // creating user class object based with the entered username and password
+                User newUser = new User(username, password);
+                // need to add stuff to add them to the SQL database here.
+            }
+        });
     }
 
     public static void main (String[] args) {

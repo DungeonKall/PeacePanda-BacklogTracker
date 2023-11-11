@@ -1,4 +1,7 @@
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 /*
 Form for main page GUI
  */
@@ -11,6 +14,9 @@ public class MainPageGUI extends JFrame {
     private JLabel currentLabel;
     private JLabel suggestedLabel;
     private JLabel completedLabel;
+    private JTable currPlayTable;
+    private JTable suggTable;
+    private JTable compTable;
 
     public MainPageGUI() {
         setContentPane(mainPanel);
@@ -19,6 +25,36 @@ public class MainPageGUI extends JFrame {
         setSize(1000, 800);
         setLocationRelativeTo(null);
         setVisible(true);
+
+        /**
+         * add game button method
+         */
+        addButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // need access to the sql database to begin working on this
+            }
+        });
+
+        /**
+         * edit entry button method
+         */
+        editButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // need access to the sql database to begin working on this
+            }
+        });
+
+        /**
+         * delete entry button method
+         */
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // need access to the sql database to begin working on this
+            }
+        });
     }
     /*
     Main method for this form, used for debugging purposes
