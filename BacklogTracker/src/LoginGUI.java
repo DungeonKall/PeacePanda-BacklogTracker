@@ -1,6 +1,9 @@
 import javax.swing.*;
 
-public class BacklogGUI extends JFrame {
+/*
+Form for login page GUI
+ */
+public class LoginGUI extends JFrame {
 
     private JPanel loginPanel;
     private JLabel titleLabel;
@@ -12,18 +15,18 @@ public class BacklogGUI extends JFrame {
     private JButton signupButton;
     private JButton loginButton;
 
-    public BacklogGUI() {
+    public LoginGUI() {
         // setting up the GUI
         setContentPane(loginPanel);
         setTitle("Backlog Tracker");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(500, 500);
+        setSize(1000, 800);
         setLocationRelativeTo(null);
         setVisible(true);
 
     }
 
     public static void main (String[] args) {
-        new BacklogGUI();
+        new LoginGUI();
     }
 }
