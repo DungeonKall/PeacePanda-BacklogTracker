@@ -55,6 +55,8 @@ public class LoginGUI{
         textUserField.setBounds(139, 181, 196, 29);
         loginPanel.getContentPane().add(textUserField);
         
+        
+        
         JLabel duplicateUserWarning = new JLabel("Username is already in use.");
         duplicateUserWarning.setHorizontalAlignment(SwingConstants.CENTER);
         duplicateUserWarning.setBounds(139, 261, 196, 14);
@@ -132,12 +134,11 @@ public class LoginGUI{
                     connection.close();
                 }
                 
+                // catch statement for specifically duplicates in the usernames since they are considered the primary keys
                 catch(SQLIntegrityConstraintViolationException s) {
                 	System.out.println(s);
                     duplicateUserWarning.setVisible(true);
                 }
-
-                // NEED TO ADD SOMETHING TO CATCH IF THERE IS A DUPLICATE ENTRY
 
                 catch (Exception error) {
                     System.out.println(error);
