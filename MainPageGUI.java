@@ -18,13 +18,18 @@ public class MainPageGUI extends JFrame {
     private JTable suggTable;
     private JTable compTable;
 
+    // database url, username, and password
+    String url = "jdbc:mysql://localhost:3306/introsweproject";
+    String username = "root";
+    String password = "";
+
     public MainPageGUI() {
         setContentPane(mainPanel);
         setTitle("Backlog Tracker");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(1000, 800);
         setLocationRelativeTo(null);
-        setVisible(true);
+        setVisible(false); // set to false until the user logs in
 
         /**
          * add game button method
