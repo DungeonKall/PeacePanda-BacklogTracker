@@ -55,7 +55,7 @@ public class MainPageGUI extends JFrame {
 		contentPane.setLayout(null);
 		
 		// header for the main page, might need an update here to display actual username
-		JLabel lblHeader = new JLabel("User's Backlog Status");
+		JLabel lblHeader = new JLabel(username +"'s Backlog Status");
 		lblHeader.setBounds(10, 11, 147, 14);
 		contentPane.add(lblHeader);
 		
