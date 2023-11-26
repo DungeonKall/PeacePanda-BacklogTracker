@@ -55,7 +55,7 @@ public class MainPageGUI extends JFrame {
 		contentPane.setLayout(null);
 		
 		// header for the main page, might need an update here to display actual username
-		JLabel lblHeader = new JLabel("User's Backlog Status");
+		JLabel lblHeader = new JLabel(username +"'s Backlog Status");
 		lblHeader.setBounds(10, 11, 147, 14);
 		contentPane.add(lblHeader);
 		
@@ -88,9 +88,52 @@ public class MainPageGUI extends JFrame {
 		
 		
 		// the Add button to add entries to a list
+		//checks if there's available cell with null value and edits that entry if possible, otherwise adds extra row
 		JButton btnAddGame = new JButton("Add Game");
 		btnAddGame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				
+				try {
+					
+					String query = "";
+					
+					//add value at next null cell so we dont get extra rows
+					if (userEntry.getText() != null) {
+					    if (rdbtnCurrentColumn.isSelected()) {
+					        query = "UPDATE " + username + " SET currently_playing = '" + userEntry.getText() + "' WHERE currently_playing IS NULL LIMIT 1;";
+					    } else if (rdbtnBacklog.isSelected()) {
+					        query = "UPDATE " + username + " SET backlogged_games = '" + userEntry.getText() + "' WHERE backlogged_games IS NULL LIMIT 1;";
+					    } else if (rdbtnCompleted.isSelected()) {
+					        query = "UPDATE " + username + " SET completed_games = '" + userEntry.getText() + "' WHERE completed_games IS NULL LIMIT 1;";
+					    }
+					    
+					    //if no null value available to then count number of cells updated
+					    PreparedStatement pst = connection.prepareStatement(query);
+					    //n cells updated
+						int cellsUpdated = pst.executeUpdate();
+						 
+					    //if no cells were updated (i.e., no NULL values found), then add new row
+					    if (cellsUpdated == 0) {
+					        if (rdbtnCurrentColumn.isSelected()) {
+					            query = "INSERT INTO " + username + " (currently_playing) VALUES ('" + userEntry.getText() + "');";
+					        } else if (rdbtnBacklog.isSelected()) {
+					            query = "INSERT INTO " + username + " (backlogged_games) VALUES ('" + userEntry.getText() + "');";
+					        } else if (rdbtnCompleted.isSelected()) {
+					            query = "INSERT INTO " + username + " (completed_games) VALUES ('" + userEntry.getText() + "');";
+					        }
+					        
+					        //exectuion and dialog box
+					        pst = connection.prepareStatement(query);
+					        pst.execute();
+					        JOptionPane.showMessageDialog(null, "Entry Added");
+					        pst.close();
+					    }
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 			}
 		});
 		btnAddGame.setBounds(10, 223, 147, 23);
@@ -149,11 +192,6 @@ public class MainPageGUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				
 				try {
-					// SAMPLE DATA JUST TO SHOW IT CAN LOAD THE TABLE
-					Statement statement = connection.createStatement();
-					String test = "INSERT INTO "+username+" (currently_playing, backlogged_games, completed_games) VALUES ('value1', 'value2', 'value3333333333333333333333333333333333333333333333333333');";
-					statement.executeUpdate(test);
-					
 					// loads data from users table
 					String query ="select * from "+username;
 					PreparedStatement pst = connection.prepareStatement(query);
@@ -168,7 +206,6 @@ public class MainPageGUI extends JFrame {
 		});
 		btnLoadTable.setBounds(318, 65, 194, 23);
 		contentPane.add(btnLoadTable);
-		
 		
 		
 		
