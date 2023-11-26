@@ -4,7 +4,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 
@@ -28,15 +30,19 @@ public class LoginGUI{
     
     /**
 	 * Create the application. And Default Constructor
+     * @throws SQLException 
+     * @throws ClassNotFoundException 
 	 */
-    public LoginGUI() {
+    public LoginGUI() throws ClassNotFoundException, SQLException {
     	initialize();
     }
     
     /**
 	 * Initialize the contents of the frame.
+     * @throws SQLException 
+     * @throws ClassNotFoundException 
 	 */
-	private void initialize() {
+	private void initialize() throws ClassNotFoundException, SQLException {
     	
         // setting up the GUI
         loginPanel = new JFrame();
@@ -45,18 +51,22 @@ public class LoginGUI{
 		loginPanel.getContentPane().setLayout(null);
 		loginPanel.setTitle("Backlog Tracker");
         
-
-        // creating class object for other panel
-        MainPageGUI mainPage = new MainPageGUI();
-        
-        
+        // text field creation
         textUserField = new JTextField();
         textUserField.setColumns(10);
         textUserField.setBounds(139, 181, 196, 29);
         loginPanel.getContentPane().add(textUserField);
         
+        // password field creation, should prevent onlookers from identifying characters on screen
+        passwordField = new JPasswordField();
+        passwordField.setBounds(139, 221, 196, 30);
+        loginPanel.getContentPane().add(passwordField);
+        loginPanel.setVisible(true);
         
         
+        /**
+         * Label creation section
+         */
         JLabel duplicateUserWarning = new JLabel("Username is already in use.");
         duplicateUserWarning.setHorizontalAlignment(SwingConstants.CENTER);
         duplicateUserWarning.setBounds(139, 261, 196, 14);
@@ -92,10 +102,6 @@ public class LoginGUI{
         lblPassword.setBounds(16, 224, 113, 26);
         loginPanel.getContentPane().add(lblPassword);
         
-        passwordField = new JPasswordField();
-        passwordField.setBounds(139, 221, 196, 30);
-        loginPanel.getContentPane().add(passwordField);
-        loginPanel.setVisible(true);
         
         
         /**
@@ -115,6 +121,7 @@ public class LoginGUI{
                 
                 // before user might attempt another sing up, will remove label stating there is duplicate user
                 duplicateUserWarning.setVisible(false);
+                incorrectLabel.setVisible(false);
 
                 // creating connection
                 try {
@@ -144,8 +151,26 @@ public class LoginGUI{
                     System.out.println(error);
                     
                 }
-                // creating user class object based with the entered username and password
-                //User newUser = new User(username, password);
+                
+                // section for creating a table associated with the user
+                try {
+                	// establish connection once again
+                	Connection connection = DriverManager.getConnection(url, SQLusername, SQLpassword);
+                	
+                	// create a prepared statement to make a table using the username as the identifier
+                	PreparedStatement createTable = connection.prepareStatement("CREATE TABLE IF NOT EXISTS "+
+                			username+"(currently_playing VARCHAR(100), backlogged_games VARCHAR(100), completed_games VARCHAR(100))");
+                	
+                	// execute statement to create etable
+                	createTable.executeUpdate();
+                	
+                	// closing connection
+                    connection.close();
+                	
+                }catch(Exception err) {
+                	System.out.println(err);
+                }
+                
         	}
         });
         btnSignUp.setBounds(139, 286, 89, 23);
@@ -170,7 +195,8 @@ public class LoginGUI{
                 }
                 
                 // removes the password fail label before user attempts the try logging in again
-                incorrectLabel.setVisible(true);
+                incorrectLabel.setVisible(false);
+                duplicateUserWarning.setVisible(false);
                 
                 // sql connections
                 try {
@@ -189,6 +215,9 @@ public class LoginGUI{
                         if (result.getString("password").equals(strPassword)) {
                             System.out.println("The passwords match :thumbsup:");
                             loginPanel.setVisible(false); // closing out of login panel
+                            
+                         // creating class object for other panel
+                            MainPageGUI mainPage = new MainPageGUI(username);
                             mainPage.setVisible(true);
                         }
                         else {
