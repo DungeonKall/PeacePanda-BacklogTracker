@@ -29,22 +29,54 @@ public class MainPageGUI extends JFrame {
 	private JPanel contentPane;
 	private JTable gameListTable;
 	private JTextField userEntry;
+	
+	// database url, username, and password
+    protected String url = "jdbc:mysql://localhost:3306/introsweproject";
+    protected String SQLusername = "root";
+    protected String SQLpassword = "";
+    
+    double percentage = 0;
+	
 
 	/**
 	 * Create the frame.
 	 * @throws ClassNotFoundException 
 	 * @throws SQLException 
 	 */
+	
+	//method to count games per column
+	public int nGamesCol(String columnLabel, String username) {
+		
+		int counter = 0;
+		String query = "select * from "+username;
+		
+		try {
+			
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection connection = DriverManager.getConnection(url, SQLusername, SQLpassword);
+			
+			Statement statement = connection.createStatement();
+			ResultSet result = statement.executeQuery(query);
+
+			
+			// counting number of valid entries in specifed column
+			while (result.next()) {
+				if (result.getString(columnLabel) != null) { // change columnLabel to the actual column's label
+					counter++;
+				}
+			}
+		}catch (Exception error) {
+	      System.out.println(error.getMessage());
+		}
+		
+		return counter;
+	}
+	
 	public MainPageGUI(String username) throws ClassNotFoundException, SQLException {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 713, 517);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		
-		// database url, username, and password
-	    String url = "jdbc:mysql://localhost:3306/introsweproject";
-	    String SQLusername = "root";
-	    String SQLpassword = "";
 	    
 	    // establish connection to the sql server and tables
 	    Class.forName("com.mysql.cj.jdbc.Driver");
@@ -181,10 +213,43 @@ public class MainPageGUI extends JFrame {
 		JButton btnEditEntry = new JButton("Edit Entry");
 		btnEditEntry.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
+				try {
+					
+					String newGameName = JOptionPane.showInputDialog(MainPageGUI.this, "Enter the new game name:");
+					
+					String query = ";";
+					
+					if(userEntry.getText() != null && rdbtnCurrentColumn.isSelected()) {
+						query ="update "+username+" set currently_playing = '"+ newGameName +"' where currently_playing = '"+userEntry.getText()+"';";
+					}
+					else if(userEntry.getText() != null && rdbtnBacklog.isSelected()) {
+						query ="update "+username+" set backlogged_games = '"+ newGameName +"' where backlogged_games = '"+userEntry.getText()+"';";
+					}
+					else if(userEntry.getText() != null && rdbtnCompleted.isSelected()) {
+						query ="update "+username+" set completed_games = '"+ newGameName +"' where completed_games = '"+userEntry.getText()+"';";
+					}
+					
+					PreparedStatement pst = connection.prepareStatement(query);
+					
+					pst.execute();
+					
+					pst.close();
+					
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
 			}
 		});
 		btnEditEntry.setBounds(10, 257, 147, 23);
 		contentPane.add(btnEditEntry);
+		
+		
+		JLabel percentageLbl = new JLabel();
+		percentageLbl.setBounds(10, 35, 147, 13);
+		contentPane.add(percentageLbl);
 		
 		// button to load user data from the tables
 		JButton btnLoadTable = new JButton("Update Table");
@@ -198,6 +263,15 @@ public class MainPageGUI extends JFrame {
 					ResultSet rs = pst.executeQuery();
 					gameListTable.setModel(DbUtils.resultSetToTableModel(rs));
 					
+					//updating backlog percentage on each update 
+					double nCurrent = (double)(nGamesCol("currently_playing", username));
+					double nBacklog = (double)(nGamesCol("backlogged_games", username));
+					double nCompleted = (double)(nGamesCol("completed_games", username));
+					
+					percentage = nCompleted/(nCurrent + nBacklog + nCompleted);
+					
+					percentageLbl.setText("Backlog " + percentage * 100 + "%");
+					
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -206,7 +280,6 @@ public class MainPageGUI extends JFrame {
 		});
 		btnLoadTable.setBounds(318, 65, 194, 23);
 		contentPane.add(btnLoadTable);
-		
 		
 		
 	}
