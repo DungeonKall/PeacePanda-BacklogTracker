@@ -3,6 +3,11 @@ Group project to use a database and gui thru github and create a simple tracker 
 
 Requirements for this code to run:
 
+// set these fields within the files to match your own username and passwords for the sql database
+protected String url = "jdbc:mysql://localhost:3306/introsweproject";
+protected String SQLusername = "root";
+protected String SQLpassword = "";
+
 mySQL connection, database, and schema named 'introsweproject'
 table named 'user_table' with two values 'username' and 'password' both VARCHAR(45), not null, and username has to be UNIQUE and PRIMARY KEY
 
