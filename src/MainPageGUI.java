@@ -1,4 +1,5 @@
 import java.awt.EventQueue;
+import java.awt.Window;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -7,6 +8,7 @@ import javax.swing.border.EmptyBorder;
 import net.proteanit.sql.DbUtils;
 
 import javax.swing.JScrollPane;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -36,6 +38,7 @@ public class MainPageGUI extends JFrame {
     protected String SQLpassword = "";
     
     double percentage = 0;
+    
 	
 
 	/**
@@ -73,7 +76,8 @@ public class MainPageGUI extends JFrame {
 	}
 	
 	public MainPageGUI(String username) throws ClassNotFoundException, SQLException {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);//default operation set to DISPOSE ON CLOSE to have controlled exit of program on logOut button click
 		setBounds(100, 100, 713, 517);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -116,8 +120,12 @@ public class MainPageGUI extends JFrame {
 		JRadioButton rdbtnCompleted = new JRadioButton("Completed");
 		rdbtnCompleted.setBounds(10, 193, 147, 23);
 		contentPane.add(rdbtnCompleted);
-				
 		
+		//add buttons to group 
+		ButtonGroup group = new ButtonGroup();
+		group.add(rdbtnCurrentColumn);
+		group.add(rdbtnBacklog);		
+		group.add(rdbtnCompleted);
 		
 		// the Add button to add entries to a list
 		//checks if there's available cell with null value and edits that entry if possible, otherwise adds extra row
@@ -280,6 +288,32 @@ public class MainPageGUI extends JFrame {
 		});
 		btnLoadTable.setBounds(318, 65, 194, 23);
 		contentPane.add(btnLoadTable);
+		
+		JButton btnLogOut = new JButton("LogOut");
+		btnLogOut.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// sql connections
+                try {
+                    Class.forName("com.mysql.cj.jdbc.Driver");
+                    Connection connection = DriverManager.getConnection(url, SQLusername, SQLpassword);
+                    
+                    // creating class object for other panel
+                    LoginGUI loginGui = new LoginGUI();
+                    loginGui.setVisible(true);
+                    
+                    // closing out of MainGUI panel
+                    dispose();
+                    
+                }
+                catch (Exception error) {
+                    System.out.println(error);
+                }
+				
+			}
+		});
+		btnLogOut.setBounds(10, 385, 147, 23);
+		contentPane.add(btnLogOut);
+		
 		
 		
 	}
