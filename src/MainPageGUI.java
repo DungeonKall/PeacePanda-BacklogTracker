@@ -299,7 +299,6 @@ public class MainPageGUI extends JFrame {
                     
                     // creating class object for other panel
                     LoginGUI loginGui = new LoginGUI();
-                    loginGui.setVisible(true);
                     
                     // closing out of MainGUI panel
                     dispose();
